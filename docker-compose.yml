@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    container_name: testpostgre
+    ports:
+      - '5432:5432'
+
+  redis:
+    image: redis:alpine
+    container_name: testredis
+    ports:
+      - '6379:6379'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-auth
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_PASSWORD=postgres
+      - REDIS_HOST=redis
+      - ENCRYPT_KEY=test
+      - JWT_SECRET=test
+      - JWT_TTL=3600
+    ports:
+      - '9111:9111'
+    depends_on:
+      - db
+      - redis
